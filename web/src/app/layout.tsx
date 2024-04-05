@@ -2,15 +2,14 @@ import SingleThemeScript from "@/components/single-theme-script";
 import { ColorSchemeScript, MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Space_Mono } from "next/font/google";
 import { theme } from "../theme";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
-
 export const metadata: Metadata = {
-  title: "Journeymap Merger",
-  description: "Merge your minecraft journeymap pieces into a single big map!",
+  title: "AceHQ Central",
+  description: "Check the status of all AceHQ apps",
 };
 
 export default function RootLayout({

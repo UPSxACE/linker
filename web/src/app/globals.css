@@ -1,2 +1,6 @@
 @tailwind components;
 @tailwind utilities;
+
+.faster-spinner::after {
+  animation-duration: 0.9s !important;
+}

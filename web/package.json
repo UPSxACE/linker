@@ -13,6 +13,8 @@
     "@mantine/form": "^7.7.1",
     "@mantine/hooks": "^7.7.1",
     "axios": "^1.6.8",
+    "clsx": "^2.1.0",
+    "framer-motion": "^11.0.25",
     "next": "^14.2.0-canary.45",
     "react": "^18",
     "react-dom": "^18",
