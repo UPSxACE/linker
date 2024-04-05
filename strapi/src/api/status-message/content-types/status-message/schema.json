@@ -1,0 +1,37 @@
+{
+  "kind": "collectionType",
+  "collectionName": "status_messages",
+  "info": {
+    "singularName": "status-message",
+    "pluralName": "status-messages",
+    "displayName": "Status Message"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "message": {
+      "type": "string",
+      "required": true
+    },
+    "status": {
+      "type": "integer",
+      "default": 0,
+      "min": 0,
+      "max": 3,
+      "required": true
+    },
+    "app": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::app.app"
+    },
+    "hidden": {
+      "type": "boolean",
+      "default": false,
+      "required": true,
+      "private": true
+    }
+  }
+}
