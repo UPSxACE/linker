@@ -1,7 +1,7 @@
 "use client";
 import { Lexend } from "next/font/google";
 
-const spaceMono = Lexend({
+const lexend = Lexend({
   weight: ["400"],
   subsets: ["latin"],
 });
@@ -10,12 +10,11 @@ import { Loader, Overlay } from "@mantine/core";
 import clsx from "clsx";
 import { AnimatePresence, motion } from "framer-motion";
 
-// @ts-ignore
+// @ts-ignore // NOTE problem with types from Mantine components
 const MotionOverlay = motion(Overlay);
 const MotionLoader = motion(Loader);
 
 export default function LoadingOverlay({ visible }: { visible: boolean }) {
-  //FIXME problem transition from solid to transparent IN SIMILLAR TONED COLORS! + opacity
   return (
     <AnimatePresence>
       {visible && (
@@ -24,13 +23,13 @@ export default function LoadingOverlay({ visible }: { visible: boolean }) {
           backgroundOpacity={1}
           fixed
           className={
-            "flex flex-col items-center justify-center gap-2 bg-mantine-dark-7"
+            "flex flex-col items-center justify-center gap-2 bg-mantine-dark-8"
           }
         >
           <motion.h1
             className={clsx(
-              "logo-font m-0 font-sans text-[5rem] leading-none text-mantine-primary-3",
-              spaceMono.className,
+              "logo-font m-0 text-center font-sans text-[5rem] leading-none text-mantine-primary-3",
+              lexend.className,
             )}
             exit={{
               translateY: -25,
@@ -38,7 +37,7 @@ export default function LoadingOverlay({ visible }: { visible: boolean }) {
               transition: { duration: 0.35 },
             }}
           >
-            Ace HQ
+            AceHQ
           </motion.h1>
 
           <MotionLoader
