@@ -25,7 +25,7 @@ export default function HomePage() {
   const [visible, setVisible] = useState(true);
   const el = useRef(null);
 
-  const { data } = useQuery({
+  const { data } = useQuery<any[]>({
     refetchInterval: 10000,
     queryKey: ["status-data"],
     queryFn: () =>
