@@ -26,20 +26,15 @@ export default function HomePage() {
   const el = useRef(null);
 
   useEffect(() => {
-    setTimeout(() => {
-      setVisible(false);
-    }, 500);
-    setTimeout(() => {}, 1500);
-  }, []);
-
-  useEffect(() => {
-    axios.get("http://localhost:1337/api/apps").then((res) => {
-      setData(res.data.data);
-      setVisible(false);
-      setTimeout(() => {
-        animate(el.current, { opacity: 1 }, { duration: 1 });
-      }, 700);
-    });
+    axios
+      .get(process.env.NEXT_PUBLIC_STRAPI_BASEURL + "/api/apps")
+      .then((res) => {
+        setData(res.data.data);
+        setVisible(false);
+        setTimeout(() => {
+          animate(el.current, { opacity: 1 }, { duration: 1 });
+        }, 700);
+      });
   }, []);
 
   return (

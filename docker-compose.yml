@@ -1,0 +1,82 @@
+services:
+  traefik:
+    image: traefik:v3.0
+    container_name: traefik
+    ports:
+      - 80:80
+      # -- (Optional) Enable Dashboard, don't do in production
+      # - 8080:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # - ./config/traefik.yaml:/etc/traefik/traefik.yaml:ro
+      - ./config/conf/:/etc/traefik/conf/
+      - ./config/certs/:/etc/traefik/certs/
+    # -- (Optional) When using Cloudflare as Cert Resolver
+    # environment:
+    #   - CF_DNS_API_TOKEN=your-cloudflare-api-token
+    restart: unless-stopped
+    depends_on:
+      - web
+    networks:
+      - traefik_network
+    command:
+      # - "--api.insecure=true"
+      # - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.file.directory=/etc/traefik"
+      - "--providers.file.watch=true"
+      - "--entrypoints.web.address=:80"
+      # - "--log.level=DEBUG"
+  postgres_db:
+    container_name: postgres_db
+    build:
+      context: ./postgres
+      dockerfile: Dockerfile
+    env_file: .env
+    image: postgres:latest
+    volumes:
+      - postgres_db_data:/var/lib/postgresql/data # We are creating a directory var/lib/mysql inside the volume "postgres_db"
+    restart: always
+    networks:
+      - traefik_network
+  strapi:
+    container_name: strapi
+    build:
+      context: ./strapi
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - postgres_db
+    networks:
+      - traefik_network
+    env_file:
+      - .env.strapi
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.strapi.rule=Host(`${STRAPI_HOSTNAME}`)
+  web:
+    container_name: web
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_STRAPI_BASEURL=${NEXT_PUBLIC_STRAPI_BASEURL}
+        - NEXT_BUILD_STANDALONE=${NEXT_BUILD_STANDALONE}
+    restart: unless-stopped
+    depends_on:
+      - strapi
+    networks:
+      - traefik_network
+    env_file:
+      - .env
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.nextjs.rule=Host(`${WEB_HOSTNAME}`)
+networks:
+  traefik_network:
+    external: true
+
+volumes:
+  postgres_db_data:
+    driver: local

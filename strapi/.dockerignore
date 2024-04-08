@@ -1,0 +1,15 @@
+.tmp/
+.cache/
+.git/
+build/
+node_modules/
+.env
+data/
+
+strapi/.tmp/
+strapi/.cache/
+strapi/.git/
+strapi/build/
+strapi/node_modules/
+strapi/.env
+strapi/data/

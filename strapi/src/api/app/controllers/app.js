@@ -15,7 +15,6 @@ async function updateStates() {
   const { results, pagination } = await service.find({ hidden: "false" });
 
   const requestStack = [];
-
   // Map through apps and prepare the requests to check if they are actually online
   results.map((app) => {
     if (app.status !== 2) {
