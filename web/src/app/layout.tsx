@@ -1,8 +1,9 @@
 import SingleThemeScript from "@/components/single-theme-script";
+import QueryClientProvider from "@/contexts/query-client-provider";
 import { ColorSchemeScript, MantineProvider } from "@mantine/core";
 import "@mantine/core/styles.css";
 import type { Metadata } from "next";
-import { Inter, Space_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import { theme } from "../theme";
 import "./globals.css";
 
@@ -29,13 +30,15 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <MantineProvider
-          theme={theme}
-          defaultColorScheme="dark"
-          forceColorScheme="dark"
-        >
-          {children}
-        </MantineProvider>
+        <QueryClientProvider>
+          <MantineProvider
+            theme={theme}
+            defaultColorScheme="dark"
+            forceColorScheme="dark"
+          >
+            {children}
+          </MantineProvider>
+        </QueryClientProvider>
       </body>
     </html>
   );

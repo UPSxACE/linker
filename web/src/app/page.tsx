@@ -5,12 +5,13 @@ import Cell from "@/components/table/cell";
 import HeaderCell from "@/components/table/header-cell";
 import Row from "@/components/table/row";
 import Table from "@/components/table/table";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import clsx from "clsx";
 import { animate, motion } from "framer-motion";
 import { Lexend } from "next/font/google";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { FiExternalLink } from "react-icons/fi";
 import AppShell from "./_components/app-shell";
 import LoadingOverlay from "./_components/loading-overlay";
@@ -21,21 +22,23 @@ const lexend = Lexend({
 });
 
 export default function HomePage() {
-  const [data, setData] = useState<null | any[]>(null);
   const [visible, setVisible] = useState(true);
   const el = useRef(null);
 
-  useEffect(() => {
-    axios
-      .get(process.env.NEXT_PUBLIC_STRAPI_BASEURL + "/api/apps")
-      .then((res) => {
-        setData(res.data.data);
-        setVisible(false);
-        setTimeout(() => {
-          animate(el.current, { opacity: 1 }, { duration: 1 });
-        }, 700);
-      });
-  }, []);
+  const { data } = useQuery({
+    refetchInterval: 10000,
+    queryKey: ["status-data"],
+    queryFn: () =>
+      axios
+        .get(process.env.NEXT_PUBLIC_STRAPI_BASEURL + "/api/apps")
+        .then((res) => {
+          setVisible(false);
+          setTimeout(() => {
+            animate(el.current, { opacity: 1 }, { duration: 1 });
+          }, 700);
+          return res.data.data;
+        }),
+  });
 
   return (
     <AppShell>

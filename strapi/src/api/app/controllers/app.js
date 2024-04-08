@@ -5,7 +5,9 @@
  */
 
 const { createCoreController } = require("@strapi/strapi").factories;
+const axios = require("axios");
 
+const HTTP_TIMEOUT = 1500;
 let lastTimeUpdated = null;
 let cache = null;
 
@@ -19,31 +21,35 @@ async function updateStates() {
   results.map((app) => {
     if (app.status !== 2) {
       async function request() {
-        try {
-          const response = await fetch(app.url + "/ping");
-          if (response.status === 200) {
-            await service.update(app.id, {
-              data: {
-                status: 3,
-              },
-            });
-            return;
-          } else {
+        await axios
+          .get(app.url + "/ping", {
+            timeout: HTTP_TIMEOUT,
+          })
+          .then(async (res) => {
+            if (res.status === 200) {
+              await service.update(app.id, {
+                data: {
+                  status: 3,
+                },
+              });
+              return;
+            }
             await service.update(app.id, {
               data: {
                 status: 0,
               },
             });
             return;
-          }
-        } catch (err) {
-          await service.update(app.id, {
-            data: {
-              status: 1,
-            },
+          })
+          .catch(async (err) => {
+            console.log(err);
+            await service.update(app.id, {
+              data: {
+                status: 1,
+              },
+            });
+            return;
           });
-          return;
-        }
       }
 
       requestStack.push(request());
