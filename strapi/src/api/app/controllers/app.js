@@ -42,7 +42,6 @@ async function updateStates() {
             return;
           })
           .catch(async (err) => {
-            console.log(err);
             await service.update(app.id, {
               data: {
                 status: 1,
