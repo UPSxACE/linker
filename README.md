@@ -1,36 +1,113 @@
-# MyDiary
+# Linker
+
 ![version](https://img.shields.io/badge/version-v1.0.0--alpha-blue)
 
-MyDiary is an intuitive fully open-source web application developed with Golang and Nextjs, for users who want a free and minimalistic alternative to keep their notes organized.
-With a user-friendly interface, MyDiary allows you to effortlessly jot down and save your thoughts, ideas, and important information.
-
-This is the central repository that connects two other using git subtrees, to bundle them up in a single docker compose container with <u>__Traefik__</u> reverse proxy and <u>__Postgres__</u> database.
-If you don't want to use docker, you can also deploy the separate parts of the app on your own way. Check the original repos for guidance:
-- [NextJS repository](https://github.com/UPSxACE/my-diary-web)
-- [Golang API repository](https://github.com/UPSxACE/my-diary-api)
+Linker is a simple single page application that I use to publish my apps, and allow users to check in real time if they are Online, Offline or currently in Maintenance. It's powered by NextJS and Strapi, and I deploy it using Docker. The docker compose container also bundles the app with <u>**Traefik**</u> to create a reverse proxy (so you can run both NextJS and Strapi in the same domain/machine) and <u>**Postgres**</u> to serve as database for Strapi.
 
 ## Table of Contents
+
+- [Concept](#concept)
 - [Features](#features)
 - [Development Prerequisites](#development-prerequisites)
 - [Installation and Setup](#installation-and-setup)
+- [Deploy with Docker](#deploy-with-docker)
+
+## Concept
+
+![Concept Flow Chart](./concept.png?raw=true "Concept Flow Chart")
 
 ## Features
-* **Intuitive Interface:** Simple, clean, fast. Designed to be as straight-forward and minimalistic as possible.
-* **Format Notes:** With our WYSIWYG editor, you can structure your notes beyond simple boring text! Add titles, quotes, horizontal rule, italic text...
-* **Code Blocks:** Support for more than 10 different programming languages.
-* **Free Forever:** The project is fully open source, and you will never be prompted to pay for anything. Clone the project and run an instance yourself, or use our [public](https://mydiary.project-lynx.com) instance.
+
+- **Easy to Update:** Strapi's dashboard makes it incredibly easy to add and remove applications, and everything else is automatized!
+- **Easy to Deploy:** Setup the environment variables, spin up the docker compose in production mode, and we're ready to go!
 
 ## Development Prerequisites
-Ensure you have the following tools and dependencies installed on your system before diving into MyDiary development:
-* Docker
+
+Ensure you have the following tools and dependencies installed on your system before diving into Linker development:
+
+- Node & NPM
+- Postgres
 
 ## Installation and Setup
+
+Make sure you run a Postgres instance by yourself, and create an empty database, and an user with all permissions before you start.
+
 ### Clone repository
+
+```bash
+git clone https://github.com/UPSxACE/linker.git && cd linker
+```
+
+### Install dependencies
+
+```bash
+cd ./strapi && yarn install && cd ../ && cd ./web && yarn install && cd ../
+```
+
+### Create .env file in /strapi
+
+```env
+npm_config_user_agent=yarn
+HOST=0.0.0.0
+PORT=1337
+# Example:
+# abcdefghij,jjjjjjjjjjj,iiiiiiiii,llllllll
+APP_KEYS=<4 STRINGS SEPPARATED BY COMMAS>
+API_TOKEN_SALT=<STRING>
+ADMIN_JWT_SECRET=<STRING>
+TRANSFER_TOKEN_SALT=<STRING>
+# Database (POSTGRES)
+DATABASE_CLIENT=postgres
+DATABASE_HOST=127.0.0.1
+DATABASE_PORT=5432
+DATABASE_NAME=<DATABASE NAME>
+DATABASE_USERNAME=<POSTGRES USERNAME>
+DATABASE_PASSWORD=<POSTGRES PASSWORD>
+DATABASE_SSL=false
+# JWT
+JWT_SECRET_EXPIRES=30d # 30 days
+PANELJWT_SECRET=<STRING>
+JWT_SECRET=<STRING>
+# CUSTOM JWT
+AUTH_COOKIE_NAME=linkerToken
+AUTH_COOKIE_EXPIRES=2592000000 #30 days
+COOKIE_DOMAIN=
+# REFRESH TOKEN
+REFRESH_SECRET=<STRING>
+REFRESH_TOKEN_EXPIRES=40d # 40 days
+NODE_ENV=development
+REFRESH_TOKEN_NAME=linkerRefreshToken
+REFRESH_COOKIE_EXPIRES=3456000000 #40 days
+```
+
+### Create .env.local file in /web
+
+```env
+NEXT_PUBLIC_STRAPI_BASEURL=http://localhost:1337
+```
+
+### Run strapi and nextjs in development mode
+
+```bash
+# Cli Nº1
+cd ./strapi && yarn develop
+```
+
+```bash
+# Cli Nº2
+cd ./web && yarn dev
+```
+
+## Deploy with Docker
+
+### Clone repository
+
 ```bash
 git clone https://github.com/UPSxACE/my-diary.git && cd my-diary
 ```
 
-### Create .env file
+### Create .env file in the root of project
+
 ```env
 # POSTGRES
 POSTGRES_USER=<POSTGRES USERNAME>
@@ -39,38 +116,66 @@ POSTGRES_DB=<DATABASE NAME>
 POSTGRES_HOST=postgres_db
 # TRAEFIK
 WEB_HOSTNAME=<DOMAIN USED FOR THE WEB APP>
-API_HOSTNAME=<DOMAIN USED FOR THE API APP>
+STRAPI_HOSTNAME=<DOMAIN USED FOR THE STRAPI APP>
 CERTRESOLVER=<"staging" OR "production">
 ACME_EMAIL=<EMAIL THAT WILL BE USED IN SSL CERTIFICATES>
 # NEXTJS
-NEXT_PUBLIC_URL=<URL USED FOR THE WEB APP>
-NEXT_PUBLIC_COOKIE_DOMAIN=<DOMAIN VALUE USED FOR THE SESSION COOKIE>
-NEXT_PUBLIC_API_BASEURL=<URL USED FOR THE API APP>
-NEXT_SERVER_API_BASEURL=http://api:1323
-NEXT_SERVER_JWT_SECRET=<JWT SECRET KEY>
+NEXT_PUBLIC_STRAPI_BASEURL=<URL USED FOR THE STRAPI APP>
 NEXT_BUILD_STANDALONE=true
-# API
-CORS_ORIGIN_1=<URL USED FOR THE WEB APP>
-CORS_ORIGIN_2=<URL USED FOR THE API APP>
-COOKIE_DOMAIN=<DOMAIN VALUE USED FOR THE SESSION COOKIE>
-POSTGRES_USERNAME=<POSTGRES USERNAME>
-POSTGRES_PASSWORD=<POSTGRES PASSWORD>
-POSTGRES_HOST=postgres_db:5432
-POSTGRES_DATABASE=<DATABASE NAME>
-JWT_SECRET=<JWT SECRET KEY>
+```
+
+### Create .env.strapi file in the root of project
+
+```env
+npm_config_user_agent=yarn
+HOST=0.0.0.0
+PORT=1337
+# Example:
+# abcdefghij,jjjjjjjjjjj,iiiiiiiii,llllllll
+APP_KEYS=<4 STRINGS SEPPARATED BY COMMAS>
+API_TOKEN_SALT=<STRING>
+ADMIN_JWT_SECRET=<STRING>
+TRANSFER_TOKEN_SALT=<STRING>
+# Database (POSTGRES)
+DATABASE_CLIENT=postgres
+DATABASE_HOST=postgres_db
+DATABASE_PORT=5432
+DATABASE_NAME=<DATABASE NAME>
+DATABASE_USERNAME=<POSTGRES USERNAME>
+DATABASE_PASSWORD=<POSTGRES PASSWORD>
+DATABASE_SSL=false
+# JWT
+JWT_SECRET_EXPIRES=30d # 30 days
+PANELJWT_SECRET=<STRING>
+JWT_SECRET=<STRING>
+# CUSTOM JWT
+AUTH_COOKIE_NAME=linkerToken
+AUTH_COOKIE_EXPIRES=2592000000 #30 days
+# example:
+# .mydomain.com
+COOKIE_DOMAIN=<DOMAIN VALUE TO BE USED IN THE COOKIES>
+# REFRESH TOKEN
+REFRESH_SECRET=<STRING>
+REFRESH_TOKEN_EXPIRES=40d # 40 days
+NODE_ENV=production
+REFRESH_TOKEN_NAME=linkerRefreshToken
+REFRESH_COOKIE_EXPIRES=3456000000 #40 days
 ```
 
 ### Create traefik network
+
 ```bash
-docker network create traefik_network 
+docker network create traefik_network
 ```
 
 ### Build production compose container
+
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.prod.yml build
 ```
 
 ### Run container
+
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.prod.yml up
 ```
