@@ -14,7 +14,7 @@ Linker is a simple single page application that I use to publish my apps, and al
 
 ## Concept
 
-![Concept Flow Chart](./concept.png?raw=true "Concept Flow Chart")
+![Concept Flow Chart](./CONCEPT.PNG?raw=true "Concept Flow Chart")
 
 ## Features
 
