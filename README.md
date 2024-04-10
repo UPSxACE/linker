@@ -25,7 +25,7 @@ Linker is a simple single page application that I use to publish my apps, and al
 
 Ensure you have the following tools and dependencies installed on your system before diving into Linker development:
 
-- Node & NPM
+- Node & Yarn
 - Postgres
 
 ## Installation and Setup
